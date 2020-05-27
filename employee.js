@@ -12,87 +12,104 @@ var connection = mysql.createConnection({
 
   // Your password
   password: "Balley01!",
-  database: "employee_managment_db"
+  database: "employee_managment_db",
 });
 
-connection.connect(function(err) {
+connection.connect(function (err) {
   if (err) throw err;
-  start()
+  start();
 });
-
 
 function start() {
-    inquirer.prompt([{
+  inquirer
+    .prompt([
+      {
         name: "init",
         type: "list",
-        message: 'What would you like to do?',
+        message: "What would you like to do?",
         choices: [
-            'View All Employees',
-            'View All Employees by Department',
-            'View All Employees by Manager',
-            'Add Employee',
-            'Remove Employee',
-            'Update Employee',
-            'Update Employee Role',
-            'Update Employee Manager',
-            'View All Roles',
-            'Exit' 
-        ]
-    }]).then((answer) => {
-        switch (answer.init){
-            case "View All Employees":
-                allEmployees();
-                break;
+          "View All Employees",
+          "View All Employees by Department",
+          "View All Employees by Manager",
+          "Add Employee",
+          "Remove Employee",
+          "Update Employee",
+          "Update Employee Role",
+          "Update Employee Manager",
+          "View All Roles",
+          "Exit",
+        ],
+      },
+    ])
+    .then((answer) => {
+      switch (answer.init) {
+        case "View All Employees":
+          allEmployees();
+          break;
 
-            case "View All Employees by Department":
+        case "View All Employees by Department":
+          allDepartments();
+          break;
 
-                break;
+        case "View All Employees by Manager":
+          break;
 
-            case "View All Employees by Manager":
+        case "Add Employee":
 
-                break;
+          break;
+        case "Remove Employee":
+          break;
 
-            case "Add Employee":
+        case "Update Employee":
+          break;
 
-                break;
-            case "Remove Employee":
+        case "Update Employee Role":
+          break;
 
-                break;
+        case "Update Employee Manager":
+          break;
 
-            case "Update Employee":
+        case "View All Roles":
+          break;
 
-                break;
-
-            case "Update Employee Role":
-
-                break;
-
-            case "Update Employee Manager":
-
-                break;
-
-            case "View All Roles":
-
-                break;    
-
-            case "Exit":
-                connection.end();
-                break;
-        }
-
-    })
-
-};
+        case "Exit":
+          connection.end();
+          break;
+      }
+    });
+}
 
 function allEmployees() {
-    connection.query("SELECT * FROM employee", function (err, res) {
-        if (err) throw err;  
-        console.log(`-----------------\n ID || NAME || ROLE_ID || MANAGER_ID`)    
-        for (var i = 0; i < res.length; i++) {
-                    console.log(`-----------------\n ${res[i].id} || ${res[i].first_name} ${res[i].last_name} || ${res[i].role_id} || ${res[i].manager_id}`);
-        }
-    })
-    
+  connection.query("SELECT * FROM employee", function (err, res) {
+    if (err) throw err;
+    console.log(`-----------------\n ID || NAME || ROLE_ID || MANAGER_ID`);
+    for (var i = 0; i < res.length; i++) {
+      console.log(
+        `-----------------\n ${res[i].id} || ${res[i].first_name} ${res[i].last_name} || ${res[i].role_id} || ${res[i].manager_id}`
+      );
+    }
+  });
 
-    start();
-};
+  start();
+}
+
+function allDepartments() {
+//   var query = "SELECT * FROM employee";
+//   query +=
+//     "FROM employee INNER JOIN roles ON roles.id = employee.role_id AND roles.department_id";
+  // query += "FROM roles INNER JOIN department ON department.id = roles.department_id AND department.dept_name"
+  // query += "ORDER BY department.dept_name"
+  connection.query("SELECT * FROM employee INNER JOIN roles ON roles.id = employee.role_id AND roles.department_id ", function (err, res) {
+    if (err) throw err;
+
+    for (var i = 0; i < res.length; i++) {
+      console.log(
+        `-----------------\n -----------------\n ${res[i].id} || ${res[i].first_name} ${res[i].last_name} || ${res[i].role_id} || ${res[i].manager_id} || ${res[i].title} || ${res[i].salary} || ${res[i].department_id}`
+      );
+    }
+  });
+
+  start();
+}
+
+
