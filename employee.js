@@ -52,24 +52,27 @@ function start() {
           break;
 
         case "View All Employees by Manager":
+            viewByManager()
           break;
 
         case "Add Employee":
           addEmp()
           break;
-        case "Remove Employee":
+        case "Remove Employee":            
           break;
 
-        case "Update Employee":
+        case "Update Employee":            
           break;
 
         case "Update Employee Role":
+          updateEmpRole()
           break;
 
         case "Update Employee Manager":
           break;
 
         case "View All Roles":
+          allRoles()
           break;
 
         case "Exit":
@@ -85,7 +88,7 @@ function allEmployees() {
     console.log(`-----------------\n ID || NAME || ROLE_ID || MANAGER_ID`);
     for (var i = 0; i < res.length; i++) {
       console.log(
-        `-----------------\n ${res[i].id} || ${res[i].first_name} ${res[i].last_name} || ${res[i].role_id} || ${res[i].manager_id}`
+        `-----------------\n ${res[i].emp_id} || ${res[i].first_name} ${res[i].last_name} || ${res[i].role_id} || ${res[i].manager_id}`
       );
     }
   });
@@ -93,18 +96,31 @@ function allEmployees() {
   start();
 }
 
+function allRoles() {
+    connection.query("SELECT * FROM roles", function (err, res) {
+      if (err) throw err;
+      console.log(`-----------------\n ID || TITLE || SALARY || DEPARTMENT_ID`);
+      for (var i = 0; i < res.length; i++) {
+        console.log(
+          `-----------------\n ${res[i].id} || ${res[i].title} || ${res[i].salary} || ${res[i].department_id}`
+        );
+      }
+    });
+  
+    start();
+  }
+
 function allDepartments() {
 //   var query = "SELECT * FROM employee";
 //   query +=
 //     "FROM employee INNER JOIN roles ON roles.id = employee.role_id AND roles.department_id";
   // query += "FROM roles INNER JOIN department ON department.id = roles.department_id AND department.dept_name"
   // query += "ORDER BY department.dept_name"
-  connection.query("SELECT * FROM employee INNER JOIN roles ON roles.id = employee.role_id AND roles.department_id ", function (err, res) {
+  connection.query("SELECT * FROM employee INNER JOIN department ON department.id = employee.department_id INNER JOIN roles ON roles.id = employee.role_id ORDER BY department.dept_name", function (err, res) {
     if (err) throw err;
-
     for (var i = 0; i < res.length; i++) {
       console.log(
-        `-----------------\n -----------------\n ${res[i].id} || ${res[i].first_name} ${res[i].last_name} || ${res[i].role_id} || ${res[i].manager_id} || ${res[i].title} || ${res[i].salary} || ${res[i].department_id}`
+        `-----------------\n -----------------\n ${res[i].emp_id} || ${res[i].first_name} ${res[i].last_name} || ${res[i].role_id} || ${res[i].manager_id} || ${res[i].title} || ${res[i].salary} || ${res[i].department_id} || ${res[i].dept_name}`
       );
     }
   });
@@ -139,7 +155,7 @@ function addEmp(){
         connection.query(
             "INSERT INTO employee SET ?",
             {
-                id: answer.id,
+                emp_id: answer.emp_id,
                 first_name: answer.first,
                 last_name: answer.last,
                 role_id: answer.role,
@@ -152,5 +168,70 @@ function addEmp(){
                 console.log('done')
             })
             start();
+    })
+}
+
+function viewByManager() {
+    //   var query = "SELECT * FROM employee";
+    //   query +=
+    //     "FROM employee INNER JOIN roles ON roles.id = employee.role_id AND roles.department_id";
+      // query += "FROM roles INNER JOIN department ON department.id = roles.department_id AND department.dept_name"
+      // query += "ORDER BY department.dept_name"
+      connection.query("SELECT * FROM employee INNER JOIN department ON department.id = employee.department_id INNER JOIN roles ON roles.id = employee.role_id ORDER BY employee.manager_id", function (err, res) {
+        if (err) throw err;
+        for (var i = 0; i < res.length; i++) {
+          console.log(
+            `-----------------\n -----------------\n ${res[i].emp_id} || ${res[i].first_name} ${res[i].last_name} || ${res[i].role_id} || ${res[i].manager_id} || ${res[i].title} || ${res[i].salary} || ${res[i].department_id} || ${res[i].dept_name}`
+          );
+        }
+      });
+    
+      start();
+    }
+
+function updateEmpRole() {
+    connection.query("SELECT * FROM employee JOIN roles  ", function(err,res){
+        inquirer.prompt([
+            {
+                type: "list",
+                name: "empNm",
+                message: "Select Employee to edit",
+                choices: function (value) {
+                    var choiceArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                      choiceArray.push(`${res[i].first_name} ${res[i].last_name}`);
+                    }
+                    return choiceArray;
+                  },
+            },
+            {
+                type: "list",
+                name: "empRole",
+                message: "What is their new role?",
+                choices: function (value) {
+                    var roleArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                      roleArray.push(res[i].title);
+                    }
+                    return roleArray;
+                  },
+            },
+        ]).then(answer => {
+            console.log(answer)
+            connection.query(
+                "UPDATE employee JOIN roles SET ? WHERE ?",
+                [
+                    {
+                        role_id: answer.empRole
+                    }
+                ],
+                function (err, res) {
+                    if (err) throw err;
+                    allEmployees();
+    
+                    console.log("updated")
+                })
+                start();
+        })
     })
 }
