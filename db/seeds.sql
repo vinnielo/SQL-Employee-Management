@@ -22,9 +22,8 @@ INSERT INTO roles (id, department_id, title, salary) VALUES (51, 4, 'Outside-Sal
 INSERT INTO roles (id, department_id, title, salary) VALUES (52, 4, 'Inside-Sales', 50000);
 
 -- Employees
-
 INSERT INTO employee (id, first_name, last_name, role_id, department_id, manager_id) 
     VALUES (29, 'Vinnie', 'Lopez', 43, 3, null);
 
 INSERT INTO employee (id, first_name, last_name, role_id, department_id, manager_id) 
-    VALUES (29, 'Wilson', 'Lam', 51, 4, null);
+    VALUES (30, 'Wilson', 'Lam', 51, 4, null);

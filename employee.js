@@ -55,7 +55,7 @@ function start() {
           break;
 
         case "Add Employee":
-
+          addEmp()
           break;
         case "Remove Employee":
           break;
@@ -112,4 +112,45 @@ function allDepartments() {
   start();
 }
 
+function addEmp(){
+    inquirer.prompt([
+        {
+            type: "input",
+            name: "first",
+            message: "Enter Employee First Name: ",
+        },
+        {
+            type: "input",
+            name: "last",
+            message: "Enter Employee Last Name: ",
+        },
+        {
+            type: "input",
+            name: "role",
+            message: "Enter Employee's Role ID: ",
+        },
+        {
+            type: "input",
+            name: "department",
+            message: "Enter Employee's Department ID: ",
+        },
+    ]).then(answer => {
 
+        connection.query(
+            "INSERT INTO employee SET ?",
+            {
+                id: answer.id,
+                first_name: answer.first,
+                last_name: answer.last,
+                role_id: answer.role,
+                department_id: answer.department
+
+            }, function (err, res) {
+                if (err) throw err;
+                allEmployees();
+
+                console.log('done')
+            })
+            start();
+    })
+}
