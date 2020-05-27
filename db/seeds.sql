@@ -1,8 +1,8 @@
 -- Departments 
-INSERT INTO departments (id, department_name) VALUES (1, 'Accounting');
-INSERT INTO departments (id, department_name) VALUES (2, 'Human_Resources');
-INSERT INTO departments (id, department_name) VALUES (3, 'Web Dev');
-INSERT INTO departments (id, department_name) VALUES (4, 'Sales');
+INSERT INTO department (id, department_name) VALUES (1, 'Accounting');
+INSERT INTO department (id, department_name) VALUES (2, 'Human_Resources');
+INSERT INTO department (id, department_name) VALUES (3, 'Web Dev');
+INSERT INTO department (id, department_name) VALUES (4, 'Sales');
 
 -- Roles
 
@@ -23,8 +23,8 @@ INSERT INTO roles (id, department_id, title, salary) VALUES (52, 4, 'Inside-Sale
 
 -- Employees
 
-INSERT INTO employees (id, first_name, last_name, role_id, department_id, manager_id) 
+INSERT INTO employee (id, first_name, last_name, role_id, department_id, manager_id) 
     VALUES (29, 'Vinnie', 'Lopez', 43, 3, null);
 
-INSERT INTO employees (id, first_name, last_name, role_id, department_id, manager_id) 
+INSERT INTO employee (id, first_name, last_name, role_id, department_id, manager_id) 
     VALUES (29, 'Wilson', 'Lam', 51, 4, null);
