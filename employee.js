@@ -1,5 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
+require("console.table")
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -94,6 +95,7 @@ function start() {
 function allEmployees() {
   connection.query("SELECT * FROM employee", function (err, res) {
     if (err) throw err;
+    console.log("\n")
     console.table(res)
     
   });
@@ -104,7 +106,8 @@ function allEmployees() {
 function allRoles() {
   connection.query("SELECT * FROM roles", function (err, res) {
     if (err) throw err;
-  console.table(res)
+    console.log("\n")
+    console.table(res)
   });
 
   start();
@@ -113,23 +116,19 @@ function allRoles() {
 function allDepts() {
   connection.query("SELECT * FROM department", function (err, res) {
     if (err) throw err;
-  console.table(res)
+    console.log("\n")
+    console.table(res)
   });
 
   start();
 }
 
 function allDepartments() {
-  //   var query = "SELECT * FROM employee";
-  //   query +=
-  //     "FROM employee INNER JOIN roles ON roles.id = employee.role_id AND roles.department_id";
-  // query += "FROM roles INNER JOIN department ON department.id = roles.department_id AND department.dept_name"
-  // query += "ORDER BY department.dept_name"
   connection.query(
     "SELECT * FROM employee INNER JOIN department ON department.id = employee.department_id INNER JOIN roles ON roles.id = employee.role_id ORDER BY department.dept_name",
     function (err, res) {
       if (err) throw err;
-      
+        console.log("\n")
         console.table(res)
    
     }
@@ -201,6 +200,7 @@ function viewByManager() {
     "SELECT * FROM employee INNER JOIN department ON department.id = employee.department_id INNER JOIN roles ON roles.id = employee.role_id ORDER BY employee.manager_id",
     function (err, res) {
       if (err) throw err;
+     console.log("\n")
      console.table(res)
     }
   );
