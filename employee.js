@@ -176,14 +176,16 @@ function addEmp() {
           first_name: answer.first,
           last_name: answer.last,
           role_id: answer.role,
-          department_id: answer.department
-        //   manager_id: answer.manager //not working
+          department_id: answer.department,
+          manager_id: answer.manager 
         },
         function (err, res) {
           if (err) throw err;
-          allEmployees();
+         
 
-          console.log("done");
+          console.log(()=>{
+            allEmployees()
+          });
         }
       );    
       start();
@@ -191,11 +193,7 @@ function addEmp() {
 }
 
 function viewByManager() {
-  //   var query = "SELECT * FROM employee";
-  //   query +=
-  //     "FROM employee INNER JOIN roles ON roles.id = employee.role_id AND roles.department_id";
-  // query += "FROM roles INNER JOIN department ON department.id = roles.department_id AND department.dept_name"
-  // query += "ORDER BY department.dept_name"
+
   connection.query(
     "SELECT * FROM employee INNER JOIN department ON department.id = employee.department_id INNER JOIN roles ON roles.id = employee.role_id ORDER BY employee.manager_id",
     function (err, res) {
@@ -215,7 +213,7 @@ function updateEmpRole() {
         {
           type: "list",
           name: "empNm",
-          message: "Select Employee to edit",
+          message: "Select Employee to update",
           choices: function (value) {
             var choiceArray = [];
             for (var i = 0; i < res.length; i++) {
@@ -244,6 +242,7 @@ function updateEmpRole() {
               },
             ])
             .then((answer) => {
+            console.log("this is working")
               console.log(answer);
               connection.query(
                 "UPDATE employee SET ? WHERE ?",
