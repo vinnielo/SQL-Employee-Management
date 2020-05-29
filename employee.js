@@ -1,6 +1,6 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-require("console.table")
+require("console.table");
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -62,11 +62,11 @@ function start() {
           break;
 
         case "Add Department":
-          addDept()  
+          addDept();
           break;
 
         case "Add Role":
-            addRole()
+          addRole();
           break;
 
         case "Update Employee Role":
@@ -95,9 +95,8 @@ function start() {
 function allEmployees() {
   connection.query("SELECT * FROM employee", function (err, res) {
     if (err) throw err;
-    console.log("\n")
-    console.table(res)
-    
+    console.log("\n");
+    console.table(res);
   });
 
   start();
@@ -106,8 +105,8 @@ function allEmployees() {
 function allRoles() {
   connection.query("SELECT * FROM roles", function (err, res) {
     if (err) throw err;
-    console.log("\n")
-    console.table(res)
+    console.log("\n");
+    console.table(res);
   });
 
   start();
@@ -116,23 +115,44 @@ function allRoles() {
 function allDepts() {
   connection.query("SELECT * FROM department", function (err, res) {
     if (err) throw err;
-    console.log("\n")
-    console.table(res)
+    console.log("\n");
+    console.table(res);
   });
 
   start();
 }
 
 function allDepartments() {
-  connection.query(
-    "SELECT * FROM employee INNER JOIN department ON department.id = employee.department_id INNER JOIN roles ON roles.id = employee.role_id ORDER BY department.dept_name",
-    function (err, res) {
-      if (err) throw err;
-        console.log("\n")
-        console.table(res)
-   
-    }
-  );
+  connection.query("SELECT * FROM department", function (err, res) {
+    console.log(res);
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "deptNm",
+          message: "Select department",
+          choices: function (value) {
+            var choiceArr = [];
+            for (var i = 0; i < res.length; i++) {
+              choiceArr.push(res[i].dept_name);
+            }
+            return choiceArr;
+          },
+        },
+      ])
+      .then((answer) => {
+        console.log(answer);
+        connection.query(
+          "SELECT * FROM department INNER JOIN employee ON employee.department_id = department.id WHERE dept_name = ?",
+          [answer.deptNm],
+          function (err, res) {
+            if (err) throw err;
+            console.log("\n");
+            console.table(res);
+          }
+        );
+      });
+  });
 
   start();
 }
@@ -163,12 +183,11 @@ function addEmp() {
       {
         type: "input",
         name: "manager",
-        message: "Does the employee have a manager? "
-    
-      }
+        message: "Does the employee have a manager? ",
+      },
     ])
     .then((answer) => {
-        console.log(answer)
+      console.log(answer);
       connection.query(
         "INSERT INTO employee SET ?",
         {
@@ -177,31 +196,28 @@ function addEmp() {
           last_name: answer.last,
           role_id: answer.role,
           department_id: answer.department,
-          manager_id: answer.manager || null
+          manager_id: answer.manager || null,
         },
         function (err, res) {
           if (err) throw err;
-         
 
-          console.log(()=>{
-            allEmployees()
+          console.log(() => {
+            allEmployees();
           });
         }
-        
       );
-        
+
       start();
     });
 }
 
 function viewByManager() {
-
   connection.query(
     "SELECT * FROM employee INNER JOIN department ON department.id = employee.department_id INNER JOIN roles ON roles.id = employee.role_id ORDER BY employee.manager_id",
     function (err, res) {
       if (err) throw err;
-     console.log("\n")
-     console.table(res)
+      console.log("\n");
+      console.table(res);
     }
   );
 
@@ -219,70 +235,81 @@ function updateEmpRole() {
           choices: function (value) {
             var choiceArray = [];
             for (var i = 0; i < res.length; i++) {
-              choiceArray.push({name:`${res[i].first_name} ${res[i].last_name}`, value: res[i].emp_id});
+              choiceArray.push({
+                name: `${res[i].first_name} ${res[i].last_name}`,
+                value: res[i].emp_id,
+              });
             }
             return choiceArray;
           },
         },
       ])
       .then((answer) => {
-         var eID = answer.empNm
-        connection.query("SELECT roles.id AS rid, roles.title, roles.department_id AS did FROM roles INNER JOIN department ON roles.department_id = department.id", function (err, res) {
-          inquirer
-            .prompt([
-              {
-                type: "list",
-                name: "empRole",
-                message: "What is their new role?",
-                choices: function (value) {
-                  var roleArray = [];
-                  for (var i = 0; i < res.length; i++) {
-                    roleArray.push({name: res[i].title, value: { rid: res[i].rid, did: res[i].did }});
-                  }
-                  return roleArray;
+        var eID = answer.empNm;
+        connection.query(
+          "SELECT roles.id AS rid, roles.title, roles.department_id AS did FROM roles INNER JOIN department ON roles.department_id = department.id",
+          function (err, res) {
+            inquirer
+              .prompt([
+                {
+                  type: "list",
+                  name: "empRole",
+                  message: "What is their new role?",
+                  choices: function (value) {
+                    var roleArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                      roleArray.push({
+                        name: res[i].title,
+                        value: { rid: res[i].rid, did: res[i].did },
+                      });
+                    }
+                    return roleArray;
+                  },
                 },
-              },
-            ])
-            .then((answer) => {
-            console.log("this is working")
-              console.log(answer);
-              connection.query(
-                "UPDATE employee SET ? WHERE ?",
-                [{
-                    role_id: answer.empRole.rid,
-                    department_id: answer.empRole.did
-                    
-                },{
-                    emp_id: eID
-                }],
-                function (err, res) {
-                  if (err) throw err;
-                  
-                  console.log(`Updated employee's role!`);
-                  allEmployees();
-                }
+              ])
+              .then((answer) => {
+                console.log("this is working");
+                console.log(answer);
+                connection.query(
+                  "UPDATE employee SET ? WHERE ?",
+                  [
+                    {
+                      role_id: answer.empRole.rid,
+                      department_id: answer.empRole.did,
+                    },
+                    {
+                      emp_id: eID,
+                    },
+                  ],
+                  function (err, res) {
+                    if (err) throw err;
+
+                    console.log(`Updated employee's role!`);
+                    allEmployees();
+                  }
                 );
-            });
-        });
+              });
+          }
+        );
       });
   });
 }
 
 function addDept() {
-    inquirer
+  inquirer
     .prompt([
       {
         type: "input",
         name: "dept",
         message: "Please add a department",
-      }
+      },
     ])
     .then((answer) => {
       connection.query(
         "INSERT INTO department SET ?",
         {
           id: answer.id,
-          dept_name: answer.dept
+          dept_name: answer.dept,
         },
         function (err, res) {
           if (err) throw err;
@@ -293,10 +320,10 @@ function addDept() {
       );
       start();
     });
-};
+}
 
 function addRole() {
-    inquirer
+  inquirer
     .prompt([
       {
         type: "input",
@@ -311,17 +338,17 @@ function addRole() {
       {
         type: "input",
         name: "roleDeptId",
-        message: "Please add the corresponding department ID?"
-      }
+        message: "Please add the corresponding department ID?",
+      },
     ])
     .then((answer) => {
       connection.query(
         "INSERT INTO roles SET ?",
         {
-          id: answer.id,  
+          id: answer.id,
           department_id: answer.roleDeptId,
           title: answer.roleName,
-          salary: answer.roleSalary
+          salary: answer.roleSalary,
         },
         function (err, res) {
           if (err) throw err;
@@ -332,7 +359,7 @@ function addRole() {
       );
       start();
     });
-};
+}
 // function updateEmpManager() {
 //   connection.query("SELECT * FROM employee", function (err, res) {
 //     inquirer

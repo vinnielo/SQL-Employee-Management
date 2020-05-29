@@ -1,4 +1,4 @@
-30-- Departments 
+-- Departments 
 INSERT INTO department (id, dept_name) VALUES (1, 'Accounting');
 INSERT INTO department (id, dept_name) VALUES (2, 'Human_Resources');
 INSERT INTO department (id, dept_name) VALUES (3, 'Web Dev');
