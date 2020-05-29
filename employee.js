@@ -163,8 +163,8 @@ function addEmp() {
       {
         type: "input",
         name: "manager",
-        message: "Does the employee have a manager? ",
-        default: "please enter their Manager ID or this will default to NULL"
+        message: "Does the employee have a manager? "
+    
       }
     ])
     .then((answer) => {
@@ -177,7 +177,7 @@ function addEmp() {
           last_name: answer.last,
           role_id: answer.role,
           department_id: answer.department,
-          manager_id: answer.manager 
+          manager_id: answer.manager || null
         },
         function (err, res) {
           if (err) throw err;
@@ -187,7 +187,9 @@ function addEmp() {
             allEmployees()
           });
         }
-      );    
+        
+      );
+        
       start();
     });
 }
