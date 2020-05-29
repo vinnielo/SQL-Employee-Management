@@ -29,7 +29,7 @@ Uses mySQL, Seeds were created so the user can make any necessary adds to the sc
 
 ## Contributing
 
-install and run the dependancies. Schema and seeds are included and are fully editable
+install and run the dependancies. Schema and seeds are included and are fully editable. Make sure to require console.table to view the full tables onthe page. 
 
 ## Credits
 
